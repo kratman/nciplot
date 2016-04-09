@@ -39,7 +39,7 @@ program nciplot
   ! cubes
   real*8, allocatable, dimension(:,:,:) :: crho, cgrad, celf, cxc
   ! ligand, intermolecular keywords
-  logical :: ligand, inter, intra
+  logical :: ligand, inter, intra, skpchk
   real*8 :: rthres
   integer :: udat0
   ! radius and cube keywords
@@ -153,6 +153,7 @@ program nciplot
   autor = .true.
   ligand = .false.
   inter = .false.
+  skpchk = .false.
   rthres = 2.d0
   doelf = .false.
   ixc = 0
@@ -188,6 +189,8 @@ program nciplot
         rthres = rthres / bohrtoa
      case ("INTERMOLECULAR")
         inter = .true.
+     case ("SKIPCHECKPOINT")
+        skpchk = .true.
      case ("RADIUS")
         autor=.false.
         read(line,*) x, rdum
@@ -483,14 +486,16 @@ program nciplot
      endif
 
      ! save the ncichk file
-     write(uout,'(" Writing the checkpoint file: ",A/)') trim(oname)//".ncichk"
-     open(luchk,file=trim(oname)//".ncichk",form="unformatted")
-     write (luchk) allocated(crho), allocated(cgrad), allocated(celf), allocated(cxc)
-     write (luchk) xinit, xinc, nstep
-     write(luchk) crho, cgrad
-     if (allocated(celf)) write (luchk) celf
-     if (allocated(cxc)) write (luchk) cxc
-     close(luchk)
+     if (skpchk .eqv. .false.) then
+       write(uout,'(" Writing the checkpoint file: ",A/)') trim(oname)//".ncichk"
+       open(luchk,file=trim(oname)//".ncichk",form="unformatted")
+       write (luchk) allocated(crho), allocated(cgrad), allocated(celf), allocated(cxc)
+       write (luchk) xinit, xinc, nstep
+       write(luchk) crho, cgrad
+       if (allocated(celf)) write (luchk) celf
+       if (allocated(cxc)) write (luchk) cxc
+       close(luchk)
+    endif
   endif
 
   ! apply cutoffs
