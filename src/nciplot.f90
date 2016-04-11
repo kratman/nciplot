@@ -656,7 +656,7 @@ contains
   end subroutine write_cube_header
 
   subroutine write_cube_body(lu,n,c)
-    
+
     integer, intent(in) :: lu
     integer, intent(in) :: n(3)
     real*8, intent(in) :: c(0:n(1)-1,0:n(2)-1,0:n(3)-1)
