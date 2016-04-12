@@ -287,11 +287,11 @@ The number of files on output can be controlled using the keywords:
 
 : n.i can be 1, 2 or 3. The files written in each case are:
 
-  + 1: only dat.
-  + 2: only cubes and vmd script.
-  + 3: all.
+  + 1: only dat
+  + 2: only cubes and vmd script
+  + 3: dat, cubes, and vmd script
 
-: The default is 3.
+: The default is 3. (See also: SKIPCHECKPOINT)
 
 ; ELF
 
