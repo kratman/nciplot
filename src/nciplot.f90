@@ -383,43 +383,39 @@ program nciplot
   else
      ludat = -1
   end if
-!  write(uout,122) trim(oname)//"-grad.cube",&
-!     trim(oname)//"-dens.cube",&
-!     trim(oname)//"-elf.cube",&
-!     trim(oname)//"-xc.cube",&
-!     trim(oname)//".dat",&
-!     trim(oname)//".vmd",&
-!     trim(oname)//".ncichk"
-      write(uout,*) "-----------------------------------------------------"
-      write(uout,*) "      Writing output in the following units:"
-      write(uout,*) "-----------------------------------------------------"
-      if ((noutput .eq. 2) .or. (noutput .eq. 3)) then
-        write(uout,*) " Reduced Density Gradient,RDG  = " &
-                      //trim(oname)//"-grad.cube"
-        write(uout,*) " Sign(lambda2)xDensity,LS      = " &
-                      //trim(oname)//"-dens.cube"
-      endif
-      if (doelf .eqv. .true.) then
-        write(uout,*) " ELF cube file                 = " &
-                      //trim(oname)//"-elf.cube"
-      endif
-      if ((ixc(1) .gt. 0) .or. (ixc(2) .gt. 0)) then
-        write(uout,*) " XC energy density cube file   = " &
-                      //trim(oname)//"-xc.cube"
-      endif
-      if ((noutput .eq. 1) .or. (noutput .eq. 3)) then
-        write(uout,*) " LS x RDG                      = " &
-                      //trim(oname)//".dat"
-      endif
-      if (skpchk .eqv. .false.) then
-        write(uout,*) " NCI checkpoint                = " &
-                      //trim(oname)//".ncichk"
-      endif
-      if ((noutput .eq. 2) .or. (noutput .eq. 3)) then
-      write(uout,*) " VMD script                    = " &
-                    //trim(oname)//".vmd"
-      endif
-      write(uout,*) "-----------------------------------------------------"
+
+  ! write output file names
+  write(uout,*) "----------------------------------------------------"
+  write(uout,*) "      Writing output in the following units:"
+  write(uout,*) "-----------------------------------------------------"
+  if ((noutput .eq. 2) .or. (noutput .eq. 3)) then
+    write(uout,*) " Reduced Density Gradient,RDG  = " &
+                  //trim(oname)//"-grad.cube"
+    write(uout,*) " Sign(lambda2)xDensity,LS      = " &
+                  //trim(oname)//"-dens.cube"
+  endif
+  if (doelf .eqv. .true.) then
+    write(uout,*) " ELF cube file                 = " &
+                  //trim(oname)//"-elf.cube"
+  endif
+  if ((ixc(1) .gt. 0) .or. (ixc(2) .gt. 0)) then
+    write(uout,*) " XC energy density cube file   = " &
+                  //trim(oname)//"-xc.cube"
+  endif
+  if ((noutput .eq. 1) .or. (noutput .eq. 3)) then
+    write(uout,*) " LS x RDG                      = " &
+                  //trim(oname)//".dat"
+  endif
+  if (skpchk .eqv. .false.) then
+    write(uout,*) " NCI checkpoint                = " &
+                  //trim(oname)//".ncichk"
+  endif
+  if ((noutput .eq. 2) .or. (noutput .eq. 3)) then
+    write(uout,*) " VMD script                    = " &
+                  //trim(oname)//".vmd"
+  endif
+  write(uout,*) "-----------------------------------------------------"
+  write(uout,*) ""
      
   ! write cube headers
   if (lugc > 0) call write_cube_header(lugc,'grad_cube','3d plot, reduced density gradient')
