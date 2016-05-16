@@ -388,7 +388,7 @@ program nciplot
   write(uout,*) "----------------------------------------------------"
   write(uout,*) "      Writing output in the following units:"
   write(uout,*) "-----------------------------------------------------"
-  if ((noutput .eq. 2) .or. (noutput .eq. 3)) then
+  if (noutput >= 2) then
     write(uout,*) " Reduced Density Gradient,RDG  = " &
                   //trim(oname)//"-grad.cube"
     write(uout,*) " Sign(lambda2)xDensity,LS      = " &
@@ -398,11 +398,11 @@ program nciplot
     write(uout,*) " ELF cube file                 = " &
                   //trim(oname)//"-elf.cube"
   endif
-  if ((ixc(1) .gt. 0) .or. (ixc(2) .gt. 0)) then
+  if ((ixc(1) > 0) .or. (ixc(2) > 0)) then
     write(uout,*) " XC energy density cube file   = " &
                   //trim(oname)//"-xc.cube"
   endif
-  if ((noutput .eq. 1) .or. (noutput .eq. 3)) then
+  if ((noutput == 1) .or. (noutput == 3)) then
     write(uout,*) " LS x RDG                      = " &
                   //trim(oname)//".dat"
   endif
@@ -410,7 +410,7 @@ program nciplot
     write(uout,*) " NCI checkpoint                = " &
                   //trim(oname)//".ncichk"
   endif
-  if ((noutput .eq. 2) .or. (noutput .eq. 3)) then
+  if (noutput >= 2) then
     write(uout,*) " VMD script                    = " &
                   //trim(oname)//".vmd"
   endif
