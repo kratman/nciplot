@@ -17,9 +17,9 @@
 ifeq ($(DEBUG),1)
   FC=gfortran
   FCFLAGS=-O3 -g -fbounds-check -Wall -Wunused-parameter -ffpe-trap=invalid -fbacktrace -fdump-core -fopenmp
-  LDFLAGS=-fopenmp
+  LDFLAGS=-O3 -fopenmp
 else
   FC=gfortran
   FCFLAGS=-O3 -fopenmp
-  LDFLAGS=-fopenmp
+  LDFLAGS=-O3 -fopenmp
 endif
