@@ -291,7 +291,7 @@ The number of files on output can be controlled using the keywords:
   + 2: only cubes and vmd script
   + 3: dat, cubes, and vmd script
 
-: The default is 3. (See also: SKIPCHECKPOINT)
+: The default is 3 (See also: SKIPCHECKPOINT).
 
 ; ELF
 
