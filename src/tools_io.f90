@@ -94,7 +94,7 @@ contains
 
     character*(20)      chtype
 
-    ! message styles shamelessly copied from abinit.
+    ! Message styles shamelessly copied from abinit.
     if (errortype.eq.faterr) then
        chtype='ERROR'
     else if (errortype.eq.warning) then

@@ -31,48 +31,48 @@ program nciplot
   character*(mline) :: filein, line, oline, word, wx, wc
   logical :: ok, ispromol
   real*8 :: rdum
-  ! the molecular info
+  ! Molecular info
   type(molecule), allocatable :: m(:)
-  ! logical units
+  ! Logical units
   integer :: lugc, ludc, luvmd, ludat, luelf, luxc, luchk
-  logical :: lchk
-  ! cubes
+  logical :: lchk, skpchk
+  ! Cubes
   real*8, allocatable, dimension(:,:,:) :: crho, cgrad, celf, cxc
-  ! ligand, intermolecular keywords
-  logical :: ligand, inter, intra, skpchk
+  ! Logical units for ligand and intermolecular keywords
+  logical :: ligand, inter, intra
   real*8 :: rthres
   integer :: udat0
-  ! radius and cube keywords
+  ! Radius and cube keywords
   logical :: autor
   real*8 :: x(3), xinit(3), xmax(3), xinc(3)
   integer :: nstep(3)
-  ! noutput keyword
+  ! Noutput keyword
   integer :: noutput
-  ! cutoffs
+  ! Cutoffs
   real*8 :: rhocut, dimcut
-  ! cutplot
+  ! Cutplot
   real*8 :: rhoplot, isordg
-  ! discarding rho parameter
+  ! Discarding rho parameter
   real*8 :: rhoparam, rhoparam2
-  ! properties of rho
+  ! Properties of rho
   real*8 :: rho, grad(3), dimgrad, grad2, hess(3,3), elf, exc
   integer, parameter :: mfrag = 100
   real*8 :: rhom(mfrag)
-  ! eispack
+  ! Eispack
   real*8 :: wk1(3), wk2(3), heigs(3), hvecs(3,3)
-  ! elf
+  ! Electron localization function
   logical :: doelf
-  ! xc
+  ! Exchange-correlation
   integer :: ixc(2)
-  ! fragments
+  ! Fragments
   integer :: nfrag
   logical :: autofrag
-  ! chk file
+  ! Checkpoint file
   logical :: alcrho, alcgrad, alcelf, alcxc
   real*8 :: xinit0(3), xinc0(3)
   integer :: nstep0(3)
 
-  ! initialize
+  ! Initialize
   call param_init()
 
   ! I/O units, process arguments
@@ -84,11 +84,11 @@ program nciplot
      endif
   endif
 
-  ! header
+  ! Header
   call header()
   call tictac(' # Start')
 
-  ! read files, define fragments
+  ! Read files, define fragments
   read (uin,*) nfiles
   if (nfiles > mfiles) call error('nciplot','too many files, increase mfiles',faterr)
   allocate(m(nfiles),stat=istat)
@@ -103,7 +103,7 @@ program nciplot
      m(ifile) = readfile(filein)
      if (ifile == 1) oname = filein(1:index(filein,'.',.true.)-1)
      ntotal = ntotal + m(ifile)%n
-     ! define fragments
+     ! Define fragments
      do i = 1, m(ifile)%n
         m(ifile)%ifrag(i) = ifile
      end do
@@ -119,10 +119,10 @@ program nciplot
   end if
   ispromol = .not.all(m(:)%ifile == ifile_wfn)
 
-  ! read density grids (props)
+  ! Read density grids (props)
   call init_rhogrid(m,nfiles)
 
-  ! by default, use density grids for heavier or charged atoms.
+  ! By default, use density grids for heavier or charged atoms.
   do i = 1, nfiles
      if (m(i)%ifile == ifile_xyz .and. (any(m(i)%z > atomic_zmax) .or. any(m(i)%q > 0))) then
         m(i)%ifile = ifile_grd
@@ -134,7 +134,7 @@ program nciplot
      end if
   end do
 
-  ! default values
+  ! Default values
   rhocut = 0.2d0
   xinc = 0.1d0
   if (any(m(:)%ifile == ifile_wfn)) then
@@ -157,7 +157,7 @@ program nciplot
   rthres = 2.d0
   doelf = .false.
   ixc = 0
-  ! read the rest of (optional) keywords
+  ! Read the rest of (optional) keywords
   xinit = m(1)%x(:,1)
   xmax = m(1)%x(:,1)
   do i = 1, nfiles
@@ -171,8 +171,8 @@ program nciplot
      line = trim(adjustl(line))
      oline = line
      call upper(line)
-     if (line(1:1) == "#") cycle ! skip comments
-     if (len(trim(line)) < 1) cycle ! skip blank lines
+     if (line(1:1) == "#") cycle ! Skip comments
+     if (len(trim(line)) < 1) cycle ! Skip blank lines
 
      idx = index(line,' ')
      word = line(1:idx-1)
@@ -215,8 +215,8 @@ program nciplot
            read (uin,'(a)') line
            line = trim(adjustl(line))
            call upper(line)
-           if (line(1:1) == "#") cycle ! skip comments
-           if (len(trim(line)) < 1) cycle ! skip blank lines
+           if (line(1:1) == "#") cycle ! Skip comments
+           if (len(trim(line)) < 1) cycle ! Skip blank lines
            lp = 1
            idx = index(line,' ')
            word = line(1:idx-1)
@@ -254,8 +254,8 @@ program nciplot
            read (uin,'(a)') line
            line = trim(adjustl(line))
            call upper(line)
-           if (line(1:1) == "#") cycle ! skip comments
-           if (len(trim(line)) < 1) cycle ! skip blank lines
+           if (line(1:1) == "#") cycle ! Skip comments
+           if (len(trim(line)) < 1) cycle ! Skip blank lines
            lp = 1
            idx = index(line,' ')
            word = line(1:idx-1)
@@ -287,7 +287,7 @@ program nciplot
      case ("ELF")
         doelf = .true.
      case ("EXC")
-        ! exchange
+        ! Exchange
         read (line,*) wx, wc
         if (trim(wx) == 'S' .or. trim(wx) == 'SLATER' .or. &
             trim(wx) == 'LDA') then
@@ -303,7 +303,7 @@ program nciplot
         else
            call error('nciplot','Unknown exchange functional',faterr)
         end if
-        ! correlation
+        ! Correlation
         if (trim(wc) == 'PW' .or. trim(wc) == 'LDA' ) then
            ixc(2) = 1
         else if (trim(wc) == 'PBE') then
@@ -329,7 +329,7 @@ program nciplot
   enddo
 11 continue
 
-  ! set grid limits and npts
+  ! Set grid limits and npts
   if (autor) then
      if (ligand) then
         xinit = m(udat0)%x(:,1)
@@ -344,7 +344,7 @@ program nciplot
   end if
   nstep = ceiling((xmax - xinit) / xinc)
 
-  ! punch info
+  ! Punch info
   write(uout,124)
   if (inter) write(uout,126) 
   if (ligand) write(uout,123) trim(m(udat0)%name)
@@ -356,7 +356,7 @@ program nciplot
   write (uout,*)
   write(uout,121) xinit, xmax, xinc, nstep
 
-  ! open output files
+  ! Open output files
   if (doelf) then
      luelf = 9
      open(luelf,file=trim(oname)//"-elf.cube")
@@ -384,8 +384,8 @@ program nciplot
      ludat = -1
   end if
 
-  ! write output file names
-  write(uout,*) "----------------------------------------------------"
+  ! Write output file names
+  write(uout,*) "-----------------------------------------------------"
   write(uout,*) "      Writing output in the following units:"
   write(uout,*) "-----------------------------------------------------"
   if (noutput >= 2) then
@@ -417,13 +417,13 @@ program nciplot
   write(uout,*) "-----------------------------------------------------"
   write(uout,*) ""
      
-  ! write cube headers
+  ! Write cube headers
   if (lugc > 0) call write_cube_header(lugc,'grad_cube','3d plot, reduced density gradient')
   if (ludc > 0) call write_cube_header(ludc,'dens_cube','3d plot, density')
   if (doelf) call write_cube_header(luelf,'elf_cube','3d plot, electron localisation function')
   if (all(ixc /= 0)) call write_cube_header(luxc,'xc_cube','3d plot, xc energy density')
 
-  ! allocate memory for density and gradient
+  ! Allocate memory for density and gradient
   allocate(crho(0:nstep(1)-1,0:nstep(2)-1,0:nstep(3)-1),stat=istat)
   if (istat /= 0) call error('nciplot','could not allocate memory for density cube',faterr)
   allocate(cgrad(0:nstep(1)-1,0:nstep(2)-1,0:nstep(3)-1),stat=istat)
@@ -437,7 +437,7 @@ program nciplot
      if (istat /= 0) call error('nciplot','could not allocate memory for xc',faterr)
   end if
 
-  ! calculate density, rdg, elf, xc... read from chkpoint if available
+  ! Calculate density, rdg, elf, xc... read from chkpoint if available
   inquire(file=trim(oname)//".ncichk",exist=lchk)
 10 continue
   if (lchk) then
@@ -467,7 +467,7 @@ program nciplot
               do i = 0, nstep(1)-1
                  x = xinit + (/i,j,k/) * xinc
 
-                 ! calculate properties at x
+                 ! Calculate properties at x
                  call calcprops_pro(x,m,nfiles,rho,rhom(1:nfrag),nfrag,autofrag,&
                     grad,hess,doelf,elf,ixc,exc)
                  call rs(3,3,hess,heigs,0,hvecs,wk1,wk2,istat)
@@ -511,7 +511,7 @@ program nciplot
         endif
      endif
 
-     ! save the ncichk file
+     ! Save the ncichk file
      if (skpchk .eqv. .false.) then
        write(uout,'(" Writing the checkpoint file: ",A/)') trim(oname)//".ncichk"
        open(luchk,file=trim(oname)//".ncichk",form="unformatted")
@@ -524,43 +524,43 @@ program nciplot
     endif
   endif
 
-  ! apply cutoffs
+  ! Apply cutoffs
   do k = 0, nstep(3)-1
      do j = 0, nstep(2)-1
         do i = 0, nstep(1)-1
-           ! fragments for the wfn case
+           ! Fragments for the wfn case
            intra = (cgrad(i,j,k) < 0)
            cgrad(i,j,k) = abs(cgrad(i,j,k))
            dimgrad = cgrad(i,j,k)
            rho = crho(i,j,k) / 100d0
 
-           ! write the dat file
+           ! Write the dat file
            if (ludat>0 .and. .not.intra .and. (abs(rho) < rhocut) .and. (dimgrad < dimcut) .and.&
               abs(rho)>1d-30) then
               write(ludat,'(1p,E18.10,E18.10)') rho, dimgrad
            end if ! rhocut/dimcut
            
-           ! write the cube files
+           ! Write the cube files
            if (all(ixc /= 0) .and. intra) cxc(i,j,k) = 100d0
            if (abs(rho) > rhoplot .or. intra) cgrad(i,j,k) = 100d0
         end do
      end do
   end do
 
-  ! write cubes
+  ! Write cubes
   if (ludc > 0) call write_cube_body(ludc,nstep,crho)
   if (lugc > 0) call write_cube_body(lugc,nstep,cgrad)
   if (doelf) call write_cube_body(luelf,nstep,celf)
   if (all(ixc /= 0)) call write_cube_body(luxc,nstep,cxc)
 
-  ! deallocate grids and close files
+  ! Deallocate grids and close files
   if (allocated(crho)) deallocate(crho)
   if (allocated(cgrad)) deallocate(cgrad)
   if (allocated(celf)) deallocate(celf)
   if (allocated(cxc)) deallocate(cxc)
   if (ludat > 0) close(ludat)
 
-  ! write vmd script
+  ! Write vmd script
   if (ligand) then
      nn0 = sum(m(1:udat0-1)%n) + 1
      nnf = sum(m(1:udat0-1)%n) + m(udat0)%n
@@ -577,10 +577,10 @@ program nciplot
      close(luvmd)
   end if
 
-  ! end
+  ! End
   call tictac('End')
 
-  ! close files
+  ! Close files
   if (uin /= stdin) close(uin)
   if (uout /= stdout) close(uout)
 
@@ -614,7 +614,7 @@ program nciplot
      'mol addrep top',/,&
      'mol representation CPK 1.00 0.30 125.00 125.00',/,&
      'mol color Name',/,&
-     'mol selection {index ',i5, ' to ',i5,'}',/,&
+     'mol selection {index ',i5,' to ',i5,'}',/,&
      'mol material Opaque',/,&
      'mol addrep top',/,&
      '#',/,&

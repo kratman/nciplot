@@ -67,7 +67,7 @@ contains
     doxc = any(ixc /= 0)
     if (doxc) xc = 0d0
 
-    ! distance matrix, hessian and tp allocates
+    ! Distance matrix, hessian and tp allocates
     nmcent = 0
     do i = 1, nmol
        nmcent = max(nmcent,mol(i)%n)
@@ -81,7 +81,7 @@ contains
     allocate(gg(n(1),3),stat=istat)
     if (istat /= 0) call error('calcprops','error allocating gg',faterr)
     
-    ! run over y and z
+    ! Run over y and z
     !$omp parallel do private (ip,jp,kp,hess,tp,gg,chi,phi,maxc,ldopri,dx,dy,dz,d2,&
     !$omp nn,ipri,iat,al,ex,x0,l,xl,xl2,grad2,rho53,ebose,df,heigs,hvecs,wk1,wk2,&
     !$omp istat,rhoaux,eelf,eexc) schedule(dynamic)
@@ -89,18 +89,18 @@ contains
        jp = j + 1
        do k = 0, n(3)-1
           kp = k + 1
-          ! zero in-line hessian and tp
+          ! Zero in-line hessian and tp
           hess = 0d0
           rhoaux = 0d0
           tp = 0d0
           gg = 0d0
 
-          ! run over molecules
+          ! Run over molecules
           do m = 1, nmol
-             ! allocate primitive evaluation array
+             ! Allocate primitive evaluation array
              allocate(chi(mol(m)%npri,10),phi(mol(m)%nmo,10))
 
-             ! identify the max coefficient
+             ! Identify the max coefficient
              allocate(maxc(mol(m)%npri),ldopri(mol(m)%npri,10))
              maxc = 0d0
              do imo = 1, mol(m)%nmo
@@ -109,7 +109,7 @@ contains
                 enddo
              enddo
 
-             ! calculate distances
+             ! Calculate distances
              do iat = 1, mol(m)%n
                 do i = 0, n(1)-1
                    ip = i + 1
@@ -120,7 +120,7 @@ contains
                 enddo
              enddo
 
-             ! calculate primitives at the points
+             ! Calculate primitives at the points
              do i = 0, n(1)-1
                 ip = i + 1
                 nn = 0
@@ -191,7 +191,7 @@ contains
                    nn = nn + mol(m)%ntyp(ityp)
                 enddo ! ityp = 1, maxntyp
                 
-                ! build the MO avlues at the point
+                ! Build the MO avlues at the point
                 phi = 0d0
                 do ix = 1, 10
                    do ipri = 1, mol(m)%npri
@@ -202,7 +202,7 @@ contains
                    enddo
                 enddo
                 
-                ! contribution to the density, etc.
+                ! Contribution to the density, etc.
                 do imo = 1, mol(m)%nmo
                    rhoaux(ip) = rhoaux(ip) + mol(m)%occ(imo) * phi(imo,1) * phi(imo,1)
                    gg(ip,1) = gg(ip,1) + 2 * mol(m)%occ(imo) * phi(imo,1) * phi(imo,2)
@@ -222,7 +222,7 @@ contains
 
           enddo ! m = 1, nmol
 
-          ! accumulate intermediate variables
+          ! Accumulate intermediate variables
           do ip = 1, n(1)
              ! rho and grad
              rhoaux(ip) = max(rhoaux(ip),1d-30)
@@ -242,7 +242,7 @@ contains
                 call calcexc(ixc,eexc,rhoaux(ip),gg(ip,:),tp(ip))
              endif
 
-             ! hessian eigenvalue and sign of rho
+             ! Hessian eigenvalue and sign of rho
              hess(ip,2,1) = hess(ip,1,2)
              hess(ip,3,1) = hess(ip,1,3)
              hess(ip,3,2) = hess(ip,2,3)
@@ -330,7 +330,7 @@ contains
     do i = 1, nm
        select case (m(i)%ifile)
        case (ifile_xyz)
-          ! promolecular densities
+          ! Promolecular densities
           call promolecular(x,m(i),rr,gg,hh,rhomr,nfr,autofr)
           tpp = 0d0
        case (ifile_grd,ifile_wfn)
@@ -442,7 +442,7 @@ contains
        rho = rho + fac0
        if (.not.autofr .and. m%ifrag(i)>0) rhom(m%ifrag(i)) = rhom(m%ifrag(i)) + fac0
        grad = grad - fac1 * xu
-       ! hessian diagonal elements
+       ! Hessian diagonal elements
        do j = 1, 3
           hess(j,j) = hess(j,j) + fac3 * xu2(j) - fac1 * r1
           do k = j+1, 3
@@ -510,10 +510,10 @@ contains
     real*8 :: pri(m%npri,10)
     integer :: i, ipri, imo
 
-    ! values of primitives
+    ! Values of primitives
     call pri012(x,m,pri)
 
-    ! sum
+    ! Sum
     phi = 0d0
     do i = 1, 10
        do ipri = 1, m%npri
@@ -694,7 +694,7 @@ contains
     if (.not.g%init) return
     if (r0 >= g%rmax) return
 
-    ! careful with grid limits.
+    ! Careful with grid limits.
     if (r0 <= g%r(1)) then
        ir = 1
        r = g%r(1)
@@ -714,7 +714,7 @@ contains
        end do
     end do
 
-    ! interpolate, lagrange 3rd order, 4 nodes
+    ! Interpolate, lagrange 3rd order, 4 nodes
     do i = 1, 4
        ii = min(max(ir,2),g%ngrid-2) - 2 + i
        prod = 1.d0
@@ -745,7 +745,7 @@ contains
 
     integer, parameter :: lu = 10
 
-    ! define a hydrogen atom
+    ! Define a hydrogen atom
     m%name = "h.dummy"
     m%ifile = ifile_xyz
     m%n = 1
@@ -818,7 +818,7 @@ contains
     case (-1)
        ex = 0d0
     case (99)
-       ! test
+       ! Test
        ! rs = (3d0 / (4d0*pi*rho))**(1d0/3d0)
        !call pbex(rho,dot_product(grad,grad),1,ex,dum1,dum2)
        !ex = -cslater_u * rho**(4d0/3d0) + ex
@@ -844,7 +844,7 @@ contains
     case (-1)
        ec = 0d0
     case (99)
-       ! test
+       ! Test
        !call gascor(0.5d0*rho,0.5d0*rho,ec,dum1,dum2,ucor0)
        !call pbec(rho,dot_product(grad,grad),1,ucor0,dum1,dum2)
        !ec = ec + ucor0
@@ -999,7 +999,7 @@ contains
     dsigs2 = 2d0 * tau2 - weizs2
     c8822 = -0.01d0*rho2*dsigs2*z22**4*(1.d0-2.d0/z22*log(1.d0+0.5d0*z22))
 
-    ! opp spins:
+    ! Opp spins:
     z12=0.63d0*(rfg1+rfg2)
     c8812=-0.8d0*rho1*rho2*z12**2*(1.d0-log(1.d0+z12)/z12)
 

@@ -21,28 +21,28 @@ module param
   public
   integer, parameter :: mline = 2048 !< line length
 
-  ! program limits
+  ! Program limits
   integer, parameter :: atomic_zmax = 18
 
-  ! paths
+  ! Paths
   character*(mline) :: nciplot_home
   character*(mline) :: nciplot_dat
 
-  ! logical units
+  ! Logical units
   integer, parameter :: stderr = 0 !< standard error lu
   integer, parameter :: stdin = 5 !< standard input lu
   integer, parameter :: stdout = 6 !< standard output lu
   integer :: uin, uout, uerr
 
-  ! math
+  ! Math
   real*8, parameter :: pi = 3.14159265358979323846d0 !< pi
   real*8, parameter :: const = 2.D0*(3.D0*PI**2)**(1.D0/3.D0)
   real*8, parameter :: eps = epsilon(1d0)
 
-  ! physics
+  ! Physics
   real*8, parameter :: bohrtoa  =  0.52917720859 !< bohr to angstrom conversion factor (nist2006)
 
-  ! error types
+  ! Error types
   integer, parameter :: faterr = -1 !< fatal error flag
   integer, parameter :: warning = 1 !< warning flag
   integer, parameter :: noerr = 0   !< info flag

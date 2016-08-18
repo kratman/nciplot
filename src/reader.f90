@@ -40,17 +40,17 @@ module reader
 
   !> Molecule type
   type molecule
-     ! file name
+     ! File name
      character(mline) :: name
-     ! common for xyz and wfn
+     ! Common for xyz and wfn
      integer :: ifile
      integer :: n
      real*8, allocatable :: x(:,:)
      integer, allocatable :: z(:)
      integer, allocatable :: q(:)
-     ! fragment id
+     ! Fragment id
      integer, allocatable :: ifrag(:)
-     ! only for wfn
+     ! Only for wfn
      integer :: nmo, npri
      integer, allocatable :: icenter(:)
      integer, allocatable :: itype(:)
@@ -103,15 +103,15 @@ contains
     character(mline) :: name, line
     logical :: ok
 
-    ! set type
+    ! Set type
     m%ifile = ifile_xyz
     m%name = file
 
-    ! read number of atoms
+    ! Read number of atoms
     open(lu,file=file,status='old')
     read(lu,*) m%n
 
-    ! allocate arrays
+    ! Allocate arrays
     allocate(m%x(3,m%n),stat=istat)
     if (istat /= 0) call error('readxyz','could not allocate memory for atomic positions',faterr)
     allocate(m%z(m%n),stat=istat)
@@ -121,7 +121,7 @@ contains
     allocate(m%ifrag(m%n),stat=istat)
     if (istat /= 0) call error('readxyz','could not allocate memory for fragment ids',faterr)
 
-    ! read atomic coordinates and atomic numbers
+    ! Read atomic coordinates and atomic numbers
     read(lu,*)
     do i = 1, m%n
        read (lu,'(a)') line
@@ -139,7 +139,7 @@ contains
        m%x(:,i) = m%x(:,i) / bohrtoa
     end do
     
-    ! close
+    ! Close
     close(lu)
 
   end function readxyz
@@ -158,16 +158,16 @@ contains
     integer :: i, j, istat, imax, icount
     real*8 :: zreal
 
-    ! set type
+    ! Set type
     m%ifile = ifile_wfn
     m%name = file
 
-    ! read number of atoms, primitives, orbitals
+    ! Read number of atoms, primitives, orbitals
     open(lu,file=file,status='old')
     read (lu,*)
     read (lu,101) orbtyp, m%nmo, m%npri, m%n
 
-    ! atomic positions and numbers
+    ! Atomic positions and numbers
     allocate(m%x(3,m%n),stat=istat)
     if (istat /= 0) call error('readwfn','could not allocate memory for atomic positions',faterr)
     allocate(m%z(m%n),stat=istat)
@@ -182,7 +182,7 @@ contains
        m%q(i) = 0
     end do
 
-    ! center assignments, types of primitives
+    ! Center assignments, types of primitives
     allocate(m%icenter(m%npri),stat=istat)
     if (istat /= 0) call error('readwfn','could not allocate memory for icenter',faterr)
     allocate(m%itype(m%npri),stat=istat)
@@ -190,12 +190,12 @@ contains
     read(lu,102) (m%icenter(i),i=1,m%npri)
     read(lu,102) (m%itype(i),i=1,m%npri)
 
-    ! primitive exponents
+    ! Primitive exponents
     allocate(m%e(m%npri),stat=istat)
     if (istat /= 0) call error('readwfn','could not allocate memory for exponents',faterr)
     read(lu,103) (m%e(i),i=1,m%npri)
     
-    ! occupations and orbital coefficients
+    ! Occupations and orbital coefficients
     allocate(m%occ(m%nmo),stat=istat)
     if (istat /= 0) call error('readwfn','could not allocate memory for occupations',faterr)
     allocate(m%c(m%nmo,m%npri),stat=istat)
@@ -207,7 +207,7 @@ contains
 
     close(lu)
 
-    ! order by primitive type
+    ! Order by primitive type
     imax = 0
     do i = 1, 35
        imax = max(count(m%itype == i),imax)
@@ -250,11 +250,11 @@ contains
     logical :: keyw(7)
     integer :: imax, icount, luwfn
 
-    ! set title
+    ! Set title
     m%ifile = ifile_wfn
     m%name = file
 
-    ! first pass
+    ! First pass
     open (luwfn,file=file,status='old')
     m%n = 0
     m%nmo = 0
@@ -278,7 +278,7 @@ contains
     if (m%nmo == 0) call error("readwfx","Number of Occupied Molecular Orbitals tag not found",2)
     if (m%npri == 0) call error("readwfx","Number of Primitives tag not found",2)
 
-    ! allocate memory
+    ! Allocate memory
     allocate(m%x(3,m%n),stat=istat)
     if (istat /= 0) call error('readwfx','could not allocate memory for atomic positions',2)
     allocate(m%z(m%n),m%q(m%n),stat=istat)
@@ -296,7 +296,7 @@ contains
     allocate(m%c(m%nmo,m%npri),stat=istat)
     if (istat /= 0) call error('readwfx','could not allocate memory for orbital coefficients',2)
     
-    ! second pass
+    ! Second pass
     rewind(luwfn)
     keyw = .false.
     do while (.true.)
@@ -339,7 +339,7 @@ contains
     if (any(.not.keyw)) call error("readwfx","missing array in wfx file",2)
     close(luwfn)
 
-    ! order by primitive type
+    ! Order by primitive type
     imax = 0
     do i = 1, 35
        imax = max(count(m%itype == i),imax)
@@ -382,7 +382,7 @@ contains
 
     integer, parameter :: lu = 10
     real*8, parameter :: core_cutdens = 1d-12 !< Cutoff contribution for core radial grids
-    ! radial grid derivation formulas
+    ! Radial grid derivation formulas
     integer, parameter :: noef(6,3) = reshape((/&
        0,  1,  2,  3,  4,  5,&
        -2, -1,  0,  1,  2,  3,&
@@ -398,10 +398,10 @@ contains
     real*8, parameter :: fac1=1d0/120d0 !< Prefactor for first derivative.
     real*8, parameter :: fac2=2d0/120d0 !< Prefactor for second derivative.
 
-    ! the filename
+    ! Filename
     file = trim(nciplot_dat) // nameguess(z) // "_lda" // ".wfc"
 
-    ! check that the file exists
+    ! Check that the file exists
     inquire(file=file,exist=exist)
     if (.not.exist) then
        write (uout,'("File: ",A)') trim(file)
@@ -447,7 +447,7 @@ contains
        end if
     end do
 
-    ! fill grid info
+    ! Fill grid info
     g%init = .true.
     g%a = exp(xmin) / zz
     g%b = dx
@@ -455,7 +455,7 @@ contains
     g%rmax = g%r(ngrid)
     g%rmax2 = g%r(ngrid)**2
 
-    ! calculate derivatives
+    ! Calculate derivatives
     allocate(g%f(ngrid),g%fp(ngrid),g%fpp(ngrid))
     do i = 1, ngrid
        if (i <= 2) then
@@ -488,7 +488,7 @@ contains
     g%fp = g%fp / (4d0*pi)
     g%fpp = g%fpp / (4d0*pi)
 
-    ! close the density file
+    ! Close the density file
     close(lu)
 
     econf = ""
@@ -508,7 +508,7 @@ contains
     write (uout,'("  El. conf. : ",A)') trim(econf)
     write (uout,*)
 
-    ! cleanup
+    ! Cleanup
     deallocate(rr,wfcin,wfcl,occ)
 
   end subroutine readgrid
