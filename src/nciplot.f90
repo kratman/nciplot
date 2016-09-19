@@ -365,7 +365,7 @@ program nciplot
      luxc = 8
      open(luxc,file=trim(oname)//"-xc.cube")
   end if
-  if (noutput >= 2) then
+  if (noutput > 1) then
      lugc = 11
      ludc = 12
      luvmd = 13
@@ -388,7 +388,7 @@ program nciplot
   write(uout,*) "-----------------------------------------------------"
   write(uout,*) "      Writing output in the following units:"
   write(uout,*) "-----------------------------------------------------"
-  if (noutput >= 2) then
+  if (noutput > 1) then
     write(uout,*) " Reduced Density Gradient,RDG  = " &
                   //trim(oname)//"-grad.cube"
     write(uout,*) " Sign(lambda2)xDensity,LS      = " &
@@ -410,7 +410,7 @@ program nciplot
     write(uout,*) " NCI checkpoint                = " &
                   //trim(oname)//".ncichk"
   endif
-  if (noutput >= 2) then
+  if (noutput > 1) then
     write(uout,*) " VMD script                    = " &
                   //trim(oname)//".vmd"
   endif
